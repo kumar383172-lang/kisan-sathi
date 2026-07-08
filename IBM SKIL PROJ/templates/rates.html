@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Mandi Rates{% endblock %}
+
+{% block content %}
+<div class="container-xxl py-4 px-3">
+
+  <!-- Header -->
+  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-0">💰 Mandi Rates Tracker</h2>
+      <p class="text-muted small mb-0">Live wholesale prices for 12 crops · Updated every refresh</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+      <input id="rateSearch" type="text" class="form-control form-control-sm" placeholder="Filter crop…" style="width:150px" oninput="filterRates(this.value)">
+      <select id="sortSelect" class="form-select form-select-sm" style="width:160px" onchange="sortRates(this.value)">
+        <option value="name">Sort: Crop Name</option>
+        <option value="price_high">Price: High → Low</option>
+        <option value="price_low">Price: Low → High</option>
+        <option value="trend">Trend</option>
+      </select>
+      <button class="btn btn-sm btn-success" onclick="loadRates()">
+        <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="row g-3 mb-4" id="rateSummary">
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini">
+        <div class="km-stat-icon">📈</div>
+        <div class="km-stat-val text-success" id="rs-rising">--</div>
+        <div class="km-stat-name">Rising Crops</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini">
+        <div class="km-stat-icon">📉</div>
+        <div class="km-stat-val text-danger" id="rs-falling">--</div>
+        <div class="km-stat-name">Falling Crops</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini">
+        <div class="km-stat-icon">💹</div>
+        <div class="km-stat-val" id="rs-stable">--</div>
+        <div class="km-stat-name">Stable</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini">
+        <div class="km-stat-icon">🏪</div>
+        <div class="km-stat-val">12</div>
+        <div class="km-stat-name">Crops Tracked</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Price Cards -->
+  <div class="row g-3 mb-4" id="rateCards">
+    <div class="col-12 text-center py-4">
+      <span class="spinner-border spinner-border-sm me-2"></span>Loading mandi prices…
+    </div>
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="card km-card">
+    <div class="card-header km-card-header">
+      <i class="bi bi-table me-2"></i>Detailed Price Table
+      <span class="text-muted ms-2 small" id="lastUpdated"></span>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0 km-rate-table" id="rateTable">
+          <thead>
+            <tr>
+              <th>Crop</th>
+              <th>Modal (₹/Qtl)</th>
+              <th>Min</th>
+              <th>Max</th>
+              <th>Trend</th>
+              <th>Mandi</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="rateTableBody">
+            <tr><td colspan="8" class="text-center py-3">
+              <span class="spinner-border spinner-border-sm me-2"></span>Loading…
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MSP Reference -->
+  <div class="card km-card mt-4">
+    <div class="card-header km-card-header">
+      <i class="bi bi-info-circle-fill me-2 text-info"></i>MSP Reference 2024–25
+    </div>
+    <div class="card-body">
+      <div class="row g-2">
+        {% set msps = [
+          ("Wheat", "2,275"), ("Rice (Common)", "2,183"), ("Maize", "2,090"),
+          ("Chickpea", "5,440"), ("Mustard", "5,650"), ("Groundnut", "6,377"),
+          ("Soybean", "4,892"), ("Cotton (Medium)", "7,121"), ("Sugarcane", "340/qtl"),
+        ] %}
+        {% for crop, msp in msps %}
+        <div class="col-md-4 col-6">
+          <div class="d-flex align-items-center gap-2 p-2 rounded" style="background:var(--km-header-bg);font-size:.83rem">
+            <span class="fw-bold text-success">₹{{ msp }}</span>
+            <span class="text-muted">{{ crop }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <p class="text-muted small mt-2 mb-0">
+        <i class="bi bi-info-circle me-1"></i>MSP = Minimum Support Price declared by Government of India.
+        Actual mandi prices may differ based on supply/demand.
+      </p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/rates.js') }}"></script>
+{% endblock %}

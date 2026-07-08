@@ -1,0 +1,49 @@
+# ── Secrets ───────────────────────────────────────────────────
+.env
+*.pem
+*.key
+
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.tox/
+.pytest_cache/
+.mypy_cache/
+
+# ── Virtual Environments ──────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+
+# ── Logs ──────────────────────────────────────────────────────
+logs/
+*.log
+*.log.*
+
+# ── FAISS Index Cache ─────────────────────────────────────────
+rag/index/
+*.faiss
+*.pkl
+
+# ── Audio tmp files ───────────────────────────────────────────
+static/audio/tmp_*.mp3
+static/audio/tmp_*.wav
+
+# ── IDE ───────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

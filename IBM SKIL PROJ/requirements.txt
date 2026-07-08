@@ -1,0 +1,17 @@
+flask==3.0.3
+flask-cors==4.0.1
+python-dotenv==1.0.1
+requests==2.32.3
+gunicorn==22.0.0
+langchain==0.2.16
+langchain-community==0.2.16
+faiss-cpu==1.8.0
+sentence-transformers==3.1.1
+gTTS==2.5.3
+pandas==2.2.2
+numpy==1.26.4
+# IBM Watsonx (optional — only needed if IBM credentials are configured)
+ibm-watsonx-ai==1.1.2
+langchain-ibm==0.1.12
+# Voice (optional — large download, comment out if not needed)
+openai-whisper==20231117

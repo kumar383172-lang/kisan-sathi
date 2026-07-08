@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block title %}AI Chat{% endblock %}
+
+{% block extra_head %}
+<!-- marked.js for proper markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+<!-- highlight.js for syntax highlighting -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/core.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/javascript.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/sql.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/bash.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/xml.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Full-height chat container — no base footer padding -->
+<div class="cp-shell" id="cpShell">
+
+  <!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+  <aside class="cp-sidebar" id="cpSidebar">
+    <div class="cp-sidebar-header">
+      <div class="d-flex align-items-center gap-2">
+        <span style="font-size:1.3rem">🌾</span>
+        <span class="fw-bold" style="font-size:.95rem">Kisan Mitra</span>
+      </div>
+      <button class="cp-icon-btn" onclick="newChat()" title="New chat">
+        <i class="bi bi-pencil-square"></i>
+      </button>
+    </div>
+
+    <button class="cp-new-chat-btn" onclick="newChat()">
+      <i class="bi bi-plus-lg me-2"></i>New chat
+    </button>
+
+    <div class="cp-sidebar-section d-flex align-items-center justify-content-between">
+      <span>Recent</span>
+      <button class="cp-clear-all-btn" onclick="clearHistory()" title="Delete all chats">
+        <i class="bi bi-trash3 me-1"></i>Clear all
+      </button>
+    </div>
+    <div id="cpHistory" class="cp-history-list"></div>
+
+    <div class="cp-sidebar-bottom">
+      <div class="cp-model-pill" id="cpModelPill">
+        <i class="bi bi-cpu me-1"></i>
+        <span id="cpModelName">IBM Granite</span>
+      </div>
+      <div class="cp-sidebar-section mt-2" style="font-size:.7rem">
+        <a href="/dashboard" class="cp-side-link"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a>
+        <a href="/diseases"  class="cp-side-link"><i class="bi bi-bug-fill me-1"></i>Diseases</a>
+        <a href="/rates"     class="cp-side-link"><i class="bi bi-currency-rupee me-1"></i>Rates</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════ MAIN PANEL ═══════════════════ -->
+  <div class="cp-main" id="cpMain">
+
+    <!-- Top bar -->
+    <div class="cp-topbar">
+      <button class="cp-icon-btn" onclick="toggleSidebar()" title="Toggle sidebar">
+        <i class="bi bi-layout-sidebar"></i>
+      </button>
+      <div class="d-flex align-items-center gap-2">
+        <span class="cp-bot-dot"></span>
+        <span class="fw-semibold" style="font-size:.9rem">Kisan Mitra</span>
+        <span class="cp-status-badge" id="statusBadge">
+          <span class="cp-status-dot"></span>
+          <span id="statusText">Ready</span>
+        </span>
+      </div>
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <select id="chatLangSelect" class="form-select form-select-sm cp-lang-select">
+          <option value="en">🌐 English</option>
+          <option value="hi">🇮🇳 हिंदी</option>
+          <option value="mr">मराठी</option>
+          <option value="ta">தமிழ்</option>
+          <option value="te">తెలుగు</option>
+          <option value="pa">ਪੰਜਾਬੀ</option>
+          <option value="bn">বাংলা</option>
+          <option value="gu">ગુજ</option>
+        </select>
+        <button class="cp-icon-btn" id="voiceOutToggle" onclick="toggleVoiceOut()" title="Voice reply">
+          <i class="bi bi-volume-up-fill"></i>
+        </button>
+        <button class="cp-icon-btn" onclick="clearHistory()" title="Clear chat">
+          <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="cp-messages" id="chatBody">
+
+      <!-- Welcome screen (shown when no messages) -->
+      <div class="cp-welcome" id="cpWelcome">
+        <div class="cp-welcome-logo">🌾</div>
+        <h2 class="cp-welcome-title">How can I help you today?</h2>
+        <p class="cp-welcome-sub">
+          Powered by <strong>IBM Watsonx Granite</strong> · Ask anything — farming, science, code, math, and more
+        </p>
+        <div class="cp-starter-grid">
+          <button class="cp-starter-card" onclick="sendStarter(this)">
+            <i class="bi bi-sun-fill cp-starter-icon text-warning"></i>
+            <div class="cp-starter-text">Best crop for black soil this season?</div>
+          </button>
+          <button class="cp-starter-card" onclick="sendStarter(this)">
+            <i class="bi bi-currency-rupee cp-starter-icon text-success"></i>
+            <div class="cp-starter-text">Today's tomato mandi rate</div>
+          </button>
+          <button class="cp-starter-card" onclick="sendStarter(this)">
+            <i class="bi bi-bug-fill cp-starter-icon text-danger"></i>
+            <div class="cp-starter-text">Cotton bollworm treatment guide</div>
+          </button>
+          <button class="cp-starter-card" onclick="sendStarter(this)">
+            <i class="bi bi-code-slash cp-starter-icon text-info"></i>
+            <div class="cp-starter-text">Write a Python script to calculate crop yield</div>
+          </button>
+          <button class="cp-starter-card" onclick="sendStarter(this)">
+            <i class="bi bi-translate cp-starter-icon" style="color:#8b5cf6"></i>
+            <div class="cp-starter-text">टमाटर में झुलसा रोग का इलाज बताएं</div>
+          </button>
+          <button class="cp-starter-card" onclick="sendStarter(this)">
+            <i class="bi bi-graph-up cp-starter-icon text-success"></i>
+            <div class="cp-starter-text">PM-Kisan yojana ke bare mein batao</div>
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /cp-messages -->
+
+    <!-- Suggestions row (shown while messages exist) -->
+    <div class="cp-suggestions-row d-none" id="cpSuggestions">
+      <button class="cp-pill-btn" onclick="sendPill(this)">🌱 Best crop now</button>
+      <button class="cp-pill-btn" onclick="sendPill(this)">💰 Mandi prices</button>
+      <button class="cp-pill-btn" onclick="sendPill(this)">🌤️ Weather today</button>
+      <button class="cp-pill-btn" onclick="sendPill(this)">🐛 Pest alert</button>
+      <button class="cp-pill-btn" onclick="sendPill(this)">🏛️ Govt schemes</button>
+      <button class="cp-pill-btn" onclick="sendPill(this)">🌿 Organic tips</button>
+    </div>
+
+    <!-- Input area -->
+    <div class="cp-input-area">
+      <div class="cp-input-box" id="cpInputBox">
+        <textarea
+          id="chatInput"
+          class="cp-textarea"
+          rows="1"
+          placeholder="Message Kisan Mitra…"
+          oninput="autoResize(this)"
+        ></textarea>
+        <div class="cp-input-actions">
+          <button id="micBtn" class="cp-action-btn cp-mic" onclick="toggleRecording()" title="Voice input">
+            <i class="bi bi-mic-fill"></i>
+          </button>
+          <button id="sendBtn" class="cp-action-btn cp-send" onclick="sendMessage()" title="Send (Enter)">
+            <i class="bi bi-arrow-up"></i>
+          </button>
+        </div>
+      </div>
+      <div class="cp-input-footer">
+        <span id="cpPoweredBy">Kisan Mitra AI · IBM Watsonx Granite</span>
+        <span class="ms-auto" style="font-size:.68rem;color:var(--cp-muted)">Enter to send · Shift+Enter for newline</span>
+      </div>
+    </div>
+
+  </div><!-- /cp-main -->
+</div><!-- /cp-shell -->
+
+<!-- ── Confirm: Clear all history ── -->
+<div class="modal fade" id="clearHistoryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content" style="border-radius:12px;border:1px solid var(--cp-border);">
+      <div class="modal-body text-center p-4">
+        <div style="font-size:2rem;margin-bottom:.5rem">🗑️</div>
+        <h6 class="fw-semibold mb-1">Delete all chats?</h6>
+        <p class="text-muted" style="font-size:.82rem;margin-bottom:1.2rem">
+          This will permanently remove all conversation history from this device.
+        </p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-sm btn-danger" onclick="_doClearHistory()" data-bs-dismiss="modal">
+            Delete all
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const q = new URLSearchParams(location.search).get("q");
+  if (q) {
+    document.getElementById("chatInput").value = q;
+    sendMessage();
+  }
+});
+</script>
+{% endblock %}

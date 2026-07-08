@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- ══════════════ HERO ══════════════ -->
+<section class="km-landing-hero d-flex align-items-center">
+  <!-- ✦ Starry sky layers -->
+  <span class="km-stars-sm" aria-hidden="true"></span>
+  <span class="km-stars-md" aria-hidden="true"></span>
+  <span class="km-stars-lg" aria-hidden="true"></span>
+  <span class="km-aurora"   aria-hidden="true"></span>
+  <span class="km-shooting-star" style="top:25%;left:10%"  aria-hidden="true"></span>
+  <span class="km-shooting-star km-shooting-star-2" style="top:15%;left:65%" aria-hidden="true"></span>
+
+  <div class="container text-center text-white py-5" style="position:relative;z-index:2">
+    <div class="km-tractor-banner mb-3">
+      <span class="tractor-anim">🚜</span>
+      <div class="field-row">🌾🌾🌽🌾🌾🌻🌾🌾🌽🌾🌾🌾🌽🌾🌾🌻🌾🌾🌽🌾</div>
+    </div>
+    <h1 class="display-4 fw-bold mb-2">Kisan Mitra</h1>
+    <p class="lead mb-1 opacity-90">AI-Powered Smart Farming Advisor</p>
+    <p class="text-white-50 mb-4" style="font-size:.95rem">
+      Powered by <strong class="text-warning">IBM Watsonx Granite</strong> &nbsp;·&nbsp;
+      RAG + Web Search &nbsp;·&nbsp; 8 Indian Languages
+    </p>
+
+    <!-- Animated growth bar -->
+    <div class="km-growth-bar-wrap mx-auto mb-4">
+      <div class="km-growth-bg">
+        <div class="km-growth-fill" id="growthBar"></div>
+        <span class="km-growth-label">Crop Growth Progress</span>
+      </div>
+    </div>
+
+    <!-- Live weather badge -->
+    <div id="heroBadge" class="km-hero-badge d-inline-flex align-items-center gap-2 mb-4">
+      <span class="spinner-border spinner-border-sm"></span>
+      <span>Fetching weather…</span>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a href="/chat"      class="btn km-hero-btn-primary px-4 py-2">
+        <i class="bi bi-chat-dots-fill me-2"></i>Ask Kisan Mitra
+      </a>
+      <a href="/dashboard" class="btn km-hero-btn-outline px-4 py-2">
+        <i class="bi bi-speedometer2 me-2"></i>View Dashboard
+      </a>
+    </div>
+  </div><!-- /container -->
+</section>
+
+<!-- ══════════════ FEATURE CARDS ══════════════ -->
+<section class="container py-5">
+  <h2 class="text-center fw-bold mb-1">Everything a Farmer Needs</h2>
+  <p class="text-center text-muted mb-4">One platform for crops, weather, markets, and AI advice</p>
+
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-3">
+      <a href="/chat" class="text-decoration-none">
+        <div class="km-feature-card text-center p-4">
+          <div class="km-feature-icon">🤖</div>
+          <h5 class="fw-bold mt-3 mb-2">AI Chatbot</h5>
+          <p class="text-muted small mb-0">Ask anything in Hindi, Marathi, Tamil, Telugu or English. Get instant AI answers powered by IBM Granite + web search.</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <a href="/dashboard" class="text-decoration-none">
+        <div class="km-feature-card text-center p-4">
+          <div class="km-feature-icon">🌤️</div>
+          <h5 class="fw-bold mt-3 mb-2">Weather & Soil</h5>
+          <p class="text-muted small mb-0">Live temperature, humidity, soil moisture, and 7-day forecast from Open-Meteo API. No key needed.</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <a href="/diseases" class="text-decoration-none">
+        <div class="km-feature-card text-center p-4">
+          <div class="km-feature-icon">🐛</div>
+          <h5 class="fw-bold mt-3 mb-2">Pest & Diseases</h5>
+          <p class="text-muted small mb-0">12 detailed pest & disease entries with symptoms, chemical and organic controls, and prevention tips.</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <a href="/rates" class="text-decoration-none">
+        <div class="km-feature-card text-center p-4">
+          <div class="km-feature-icon">💰</div>
+          <h5 class="fw-bold mt-3 mb-2">Mandi Rates</h5>
+          <p class="text-muted small mb-0">Live wholesale prices for 12+ crops with trend indicators, modal/min/max prices, and mandi locations.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ HOW IT WORKS ══════════════ -->
+<section class="km-how-section py-5">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-1">How Kisan Mitra Works</h2>
+    <p class="text-center text-muted mb-5">Intelligent RAG pipeline with web-search augmentation</p>
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-6">
+        <div class="km-pipeline">
+          <div class="km-pipe-step">
+            <div class="km-pipe-num">1</div>
+            <div>
+              <strong>You ask a question</strong>
+              <p class="text-muted small mb-0">Type or speak in any Indian language. Kisan Mitra detects your language automatically.</p>
+            </div>
+          </div>
+          <div class="km-pipe-step">
+            <div class="km-pipe-num">2</div>
+            <div>
+              <strong>RAG retrieval from knowledge base</strong>
+              <p class="text-muted small mb-0">FAISS vector search fetches relevant agronomic data: crop calendars, pest alerts, soil info, govt schemes.</p>
+            </div>
+          </div>
+          <div class="km-pipe-step">
+            <div class="km-pipe-num">3</div>
+            <div>
+              <strong>Live data injection</strong>
+              <p class="text-muted small mb-0">Real-time weather (Open-Meteo) and mandi prices are appended to the context automatically.</p>
+            </div>
+          </div>
+          <div class="km-pipe-step">
+            <div class="km-pipe-num">4</div>
+            <div>
+              <strong>Web search enrichment</strong>
+              <p class="text-muted small mb-0">DuckDuckGo Instant Answer API fills gaps with current web knowledge.</p>
+            </div>
+          </div>
+          <div class="km-pipe-step">
+            <div class="km-pipe-num">5</div>
+            <div>
+              <strong>IBM Granite generates answer</strong>
+              <p class="text-muted small mb-0">IBM Watsonx Granite-13B produces a grounded, cited, language-matched response.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="km-stats-grid">
+          <div class="km-stat-card">
+            <div class="km-stat-num">8</div>
+            <div class="km-stat-label">Indian Languages</div>
+          </div>
+          <div class="km-stat-card">
+            <div class="km-stat-num">22</div>
+            <div class="km-stat-label">Knowledge Chunks</div>
+          </div>
+          <div class="km-stat-card">
+            <div class="km-stat-num">12</div>
+            <div class="km-stat-label">Tracked Crops</div>
+          </div>
+          <div class="km-stat-card">
+            <div class="km-stat-num">12</div>
+            <div class="km-stat-label">Disease Profiles</div>
+          </div>
+          <div class="km-stat-card">
+            <div class="km-stat-num">7-Day</div>
+            <div class="km-stat-label">Weather Forecast</div>
+          </div>
+          <div class="km-stat-card">
+            <div class="km-stat-num">Free</div>
+            <div class="km-stat-label">IBM Cloud Lite</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ QUICK ACTIONS ══════════════ -->
+<section class="container py-5">
+  <h2 class="text-center fw-bold mb-4">Quick Ask</h2>
+  <div class="row g-3 justify-content-center">
+    {% set questions = [
+      ("Best crop for black soil this season?", "/chat"),
+      ("Tomato mandi rate today?", "/rates"),
+      ("Cotton bollworm treatment", "/diseases"),
+      ("PM-Kisan scheme details", "/chat"),
+      ("गेहूं की सिंचाई कब करें?", "/chat"),
+      ("7-day weather forecast", "/dashboard")
+    ] %}
+    {% for q, dest in questions %}
+    <div class="col-md-4 col-lg-3">
+      <a href="{{ dest }}?q={{ q | urlencode }}" class="btn km-quick-btn w-100 text-start">
+        <i class="bi bi-arrow-right-circle-fill me-2 text-success"></i>{{ q }}
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Growth bar
+  const month = new Date().getMonth() + 1;
+  const pct   = month >= 6 && month <= 9 ? 65 : month >= 10 || month <= 2 ? 85 : 45;
+  setTimeout(() => { document.getElementById("growthBar").style.width = pct + "%"; }, 500);
+
+  // Hero weather badge
+  const lat = parseFloat(document.cookie.match(/lat=([^;]+)/)?.[1]) || 20.59;
+  const lon = parseFloat(document.cookie.match(/lon=([^;]+)/)?.[1]) || 78.96;
+  fetch(`/api/weather?lat=${lat}&lon=${lon}`)
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById("heroBadge").innerHTML =
+        `<span>${d.weather_icon}</span><span>${d.temperature}°C · ${d.weather_desc} · Humidity ${d.humidity}%</span>`;
+    })
+    .catch(() => {
+      document.getElementById("heroBadge").textContent = "Weather data unavailable";
+    });
+});
+</script>
+{% endblock %}

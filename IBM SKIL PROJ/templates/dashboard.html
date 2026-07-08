@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-xxl py-4 px-3">
+
+  <!-- Page Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div>
+      <h2 class="fw-bold mb-0">🌾 Farm Dashboard</h2>
+      <p class="text-muted small mb-0">Live weather, soil data, crop advice, and market overview</p>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <span id="locationBadge" class="badge bg-success-subtle text-success fw-normal">
+        <i class="bi bi-geo-alt-fill me-1"></i>Detecting location…
+      </span>
+      <button class="btn btn-sm km-refresh-btn" onclick="refreshAll()">
+        <i class="bi bi-arrow-clockwise me-1"></i>Refresh All
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Row 1: Stats ── -->
+  <div class="row g-3 mb-4" id="statCards">
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini" id="s-temp">
+        <div class="km-stat-icon">🌡️</div>
+        <div class="km-stat-val" id="sv-temp">--</div>
+        <div class="km-stat-name">Temperature</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini" id="s-hum">
+        <div class="km-stat-icon">💧</div>
+        <div class="km-stat-val" id="sv-hum">--</div>
+        <div class="km-stat-name">Humidity</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini" id="s-soil">
+        <div class="km-stat-icon">🪱</div>
+        <div class="km-stat-val" id="sv-soil">--</div>
+        <div class="km-stat-name">Soil Moisture</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini" id="s-rain">
+        <div class="km-stat-icon">🌧️</div>
+        <div class="km-stat-val" id="sv-rain">--</div>
+        <div class="km-stat-name">Rainfall Today</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Row 2: Weather + Crops ── -->
+  <div class="row g-4 mb-4">
+
+    <!-- Weather Detail -->
+    <div class="col-lg-5">
+      <div class="card km-card h-100">
+        <div class="card-header km-card-header d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-cloud-sun-fill me-2 text-warning"></i>Live Weather & Soil</span>
+          <button class="btn btn-xs km-refresh-btn" onclick="loadWeatherDash()">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+        <div class="card-body" id="weatherBodyDash">
+          <div class="km-skeleton-block"></div>
+          <div class="km-skeleton-block short mt-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crop Recommender -->
+    <div class="col-lg-4">
+      <div class="card km-card h-100">
+        <div class="card-header km-card-header">
+          <i class="bi bi-flower1 me-2 text-success"></i>Crop Recommender
+        </div>
+        <div class="card-body">
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">Soil Type</label>
+            <select id="soilType" class="form-select form-select-sm mb-2">
+              <option value="Loamy">Loamy</option>
+              <option value="Black (Vertisol)">Black Cotton</option>
+              <option value="Alluvial">Alluvial</option>
+              <option value="Red Laterite">Red Laterite</option>
+              <option value="Sandy Loam">Sandy Loam</option>
+              <option value="Sandy">Sandy</option>
+            </select>
+            <label class="form-label small fw-semibold">Season</label>
+            <select id="seasonType" class="form-select form-select-sm">
+              <option value="">Auto-detect</option>
+              <option value="Kharif">Kharif</option>
+              <option value="Rabi">Rabi</option>
+              <option value="Zaid">Zaid</option>
+            </select>
+          </div>
+          <button class="btn btn-success btn-sm w-100 mt-2" onclick="loadCrops()">
+            <i class="bi bi-search me-1"></i>Get Recommendations
+          </button>
+          <div id="cropResults" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Alerts -->
+    <div class="col-lg-3">
+      <div class="card km-card h-100">
+        <div class="card-header km-card-header">
+          <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>Active Alerts
+        </div>
+        <div class="card-body p-2">
+          <div class="km-alert-item danger">
+            <div class="fw-semibold" style="font-size:.82rem">🐛 Fall Armyworm</div>
+            <div style="font-size:.75rem" class="text-muted">Maize · High Risk</div>
+          </div>
+          <div class="km-alert-item warning">
+            <div class="fw-semibold" style="font-size:.82rem">🍃 Leaf Curl Virus</div>
+            <div style="font-size:.75rem" class="text-muted">Tomato · High Risk</div>
+          </div>
+          <div class="km-alert-item warning">
+            <div class="fw-semibold" style="font-size:.82rem">🌾 Rice Blast</div>
+            <div style="font-size:.75rem" class="text-muted">Rice · Moderate Risk</div>
+          </div>
+          <div class="km-alert-item success">
+            <div class="fw-semibold" style="font-size:.82rem">🐞 Aphids</div>
+            <div style="font-size:.75rem" class="text-muted">Mustard · Low Risk</div>
+          </div>
+          <a href="/diseases" class="btn btn-xs km-refresh-btn w-100 mt-2">
+            View All Diseases →
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Row 3: Mandi + Forecast ── -->
+  <div class="row g-4 mb-4">
+
+    <!-- Mandi Prices -->
+    <div class="col-lg-6">
+      <div class="card km-card">
+        <div class="card-header km-card-header d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-currency-rupee me-2 text-warning"></i>Mandi Price Tracker</span>
+          <div class="d-flex gap-1 align-items-center">
+            <input type="text" id="mandiSearch" class="form-control form-control-sm" placeholder="Filter crop…" style="width:110px" oninput="filterMandi(this.value)">
+            <button class="btn btn-xs km-refresh-btn" onclick="loadMandi()"><i class="bi bi-arrow-clockwise"></i></button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div id="mandiTable" class="km-mandi-wrap">
+            <div class="p-3"><span class="spinner-border spinner-border-sm me-2"></span>Loading…</div>
+          </div>
+        </div>
+        <div class="card-footer py-2 text-center">
+          <a href="/rates" class="small text-success fw-semibold text-decoration-none">
+            View Full Rates Page →
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7-day Forecast -->
+    <div class="col-lg-6">
+      <div class="card km-card">
+        <div class="card-header km-card-header">
+          <i class="bi bi-calendar3-week me-2 text-info"></i>7-Day Forecast
+        </div>
+        <div class="card-body p-2">
+          <div id="forecastRow" class="d-flex gap-2 overflow-auto km-forecast-row py-1"></div>
+        </div>
+      </div>
+
+      <!-- AI Chat Prompt CTA -->
+      <div class="card km-card mt-4 km-chat-cta">
+        <div class="card-body d-flex align-items-center gap-3 py-3">
+          <div style="font-size:2.5rem">🤖</div>
+          <div class="flex-grow-1">
+            <div class="fw-bold mb-1">Got a question about your farm?</div>
+            <div class="text-muted small">Ask Kisan Mitra in your language — crops, pests, schemes, irrigation…</div>
+          </div>
+          <a href="/chat" class="btn btn-success btn-sm flex-shrink-0">
+            Ask AI <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌾 Kisan Mitra – Smart Farming Advisor</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Custom styles -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+</head>
+
+<body>
+<!-- ══════════════════════ NAVBAR ══════════════════════ -->
+<nav class="navbar navbar-expand-lg km-navbar sticky-top">
+  <div class="container-fluid px-3">
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#">
+      <span class="tractor-icon">🚜</span>
+      <span>Kisan Mitra</span>
+      <span class="badge bg-success-subtle text-success ms-1 fw-normal" style="font-size:.65rem">AI Advisor</span>
+    </a>
+    <div class="d-flex align-items-center gap-2 ms-auto">
+      <!-- Language picker -->
+      <select id="langSelect" class="form-select form-select-sm km-lang-select">
+        <option value="en">🌐 English</option>
+        <option value="hi">🇮🇳 हिंदी</option>
+        <option value="mr">महाराष्ट्र मराठी</option>
+        <option value="ta">தமிழ்</option>
+        <option value="te">తెలుగు</option>
+        <option value="pa">ਪੰਜਾਬੀ</option>
+        <option value="bn">বাংলা</option>
+        <option value="gu">ગુજરાતી</option>
+      </select>
+      <!-- Dark mode toggle -->
+      <button id="darkToggle" class="btn btn-sm km-toggle-btn" title="Toggle dark mode">
+        <i class="bi bi-moon-stars-fill"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════ HERO BANNER ══════════════════════ -->
+<header class="km-hero d-flex align-items-center">
+  <div class="container text-center text-white py-4">
+    <h1 class="display-5 fw-bold mb-1">🌱 Smart Farming Advisor</h1>
+    <p class="lead mb-3">AI-powered advice in your language · Weather · Prices · Pest Alerts</p>
+    <!-- Animated crop growth bar -->
+    <div class="km-growth-bar-wrap mx-auto mb-3">
+      <div class="km-growth-bg">
+        <div class="km-growth-fill" id="growthBar"></div>
+        <span class="km-growth-label">Crop Growth Progress</span>
+      </div>
+    </div>
+    <!-- Weather mini-badge -->
+    <div id="heroBadge" class="km-hero-badge d-inline-flex align-items-center gap-2">
+      <span class="spinner-border spinner-border-sm" role="status"></span>
+      <span>Fetching weather…</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════ MAIN CONTENT ══════════════════════ -->
+<main class="container-xxl px-3 py-4">
+  <div class="row g-4">
+
+    <!-- ╔═══════════════ LEFT COLUMN ═══════════════╗ -->
+    <div class="col-xl-4 col-lg-5 d-flex flex-column gap-4">
+
+      <!-- ── Weather Card ── -->
+      <div class="card km-card" id="weatherCard">
+        <div class="card-header km-card-header d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-cloud-sun-fill me-2 text-warning"></i>Live Weather & Soil</span>
+          <button class="btn btn-xs km-refresh-btn" onclick="loadWeather()" title="Refresh">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+        <div class="card-body" id="weatherBody">
+          <div class="km-skeleton-block"></div>
+          <div class="km-skeleton-block short mt-2"></div>
+        </div>
+      </div>
+
+      <!-- ── Crop Recommender ── -->
+      <div class="card km-card">
+        <div class="card-header km-card-header">
+          <i class="bi bi-flower1 me-2 text-success"></i>Crop Recommender
+        </div>
+        <div class="card-body">
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label small fw-semibold">Soil Type</label>
+              <select id="soilType" class="form-select form-select-sm">
+                <option value="Loamy">Loamy</option>
+                <option value="Black (Vertisol)">Black Cotton</option>
+                <option value="Alluvial">Alluvial</option>
+                <option value="Red Laterite">Red Laterite</option>
+                <option value="Sandy Loam">Sandy Loam</option>
+                <option value="Sandy">Sandy</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold">Season</label>
+              <select id="seasonType" class="form-select form-select-sm">
+                <option value="">Auto-detect</option>
+                <option value="Kharif">Kharif (Jun–Sep)</option>
+                <option value="Rabi">Rabi (Oct–Mar)</option>
+                <option value="Zaid">Zaid (Apr–Jun)</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-success btn-sm w-100" onclick="loadCrops()">
+            <i class="bi bi-search me-1"></i>Get Recommendations
+          </button>
+          <div id="cropResults" class="mt-3"></div>
+        </div>
+      </div>
+
+      <!-- ── Mandi Prices ── -->
+      <div class="card km-card">
+        <div class="card-header km-card-header d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-currency-rupee me-2 text-warning"></i>Mandi Price Tracker</span>
+          <button class="btn btn-xs km-refresh-btn" onclick="loadMandi()" title="Refresh">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+        <div class="card-body p-0">
+          <div id="mandiTable" class="km-mandi-wrap">
+            <div class="p-3"><span class="spinner-border spinner-border-sm me-2"></span>Loading prices…</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- ╚════════════════════════════════════════════╝ -->
+
+    <!-- ╔═══════════════ RIGHT COLUMN – CHATBOT ═══════════════╗ -->
+    <div class="col-xl-8 col-lg-7 d-flex flex-column">
+      <div class="card km-card km-chat-card flex-grow-1 d-flex flex-column">
+        <div class="card-header km-card-header d-flex align-items-center gap-2">
+          <span class="km-bot-dot"></span>
+          <span class="fw-semibold">Kisan Mitra Chatbot</span>
+          <span class="text-muted small ms-1">· Ask anything about your farm</span>
+          <div class="ms-auto d-flex gap-1">
+            <button class="btn btn-xs km-refresh-btn" onclick="clearHistory()" title="Clear chat">
+              <i class="bi bi-trash3"></i>
+            </button>
+            <button class="btn btn-xs km-refresh-btn" id="voiceOutToggle" onclick="toggleVoiceOut()" title="Toggle voice reply">
+              <i class="bi bi-volume-up-fill"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Chat messages -->
+        <div class="card-body km-chat-body" id="chatBody">
+          <!-- Welcome message -->
+          <div class="km-msg km-msg-bot">
+            <div class="km-msg-avatar">🌾</div>
+            <div class="km-msg-bubble">
+              <strong>Jai Kisan! 🙏</strong><br>
+              I'm Kisan Mitra, your AI farming advisor powered by IBM Watsonx Granite.<br><br>
+              Ask me about crops, weather, mandi rates, pests, government schemes — in <strong>any Indian language</strong>!<br><br>
+              <em>Try: "Best crop for black soil this season?" or "टमाटर का भाव क्या है?"</em>
+            </div>
+          </div>
+        </div>
+
+        <!-- Suggested questions -->
+        <div class="px-3 py-2 km-suggestions d-flex flex-wrap gap-1" id="suggestions">
+          <button class="btn btn-xs km-suggest-btn" onclick="sendSuggestion(this)">Best crop this season?</button>
+          <button class="btn btn-xs km-suggest-btn" onclick="sendSuggestion(this)">Tomato mandi rate today?</button>
+          <button class="btn btn-xs km-suggest-btn" onclick="sendSuggestion(this)">Pest alert for cotton</button>
+          <button class="btn btn-xs km-suggest-btn" onclick="sendSuggestion(this)">PM-Kisan scheme details</button>
+          <button class="btn btn-xs km-suggest-btn" onclick="sendSuggestion(this)">कौन सी खाद डालें?</button>
+          <button class="btn btn-xs km-suggest-btn" onclick="sendSuggestion(this)">गेहूं की सिंचाई कब करें?</button>
+        </div>
+
+        <!-- Input area -->
+        <div class="card-footer km-chat-footer p-2">
+          <div class="d-flex gap-2 align-items-end">
+            <div class="flex-grow-1">
+              <textarea
+                id="chatInput"
+                class="form-control km-chat-input"
+                rows="2"
+                placeholder="Type your question in any language… / कोई भी सवाल पूछें…"
+              ></textarea>
+            </div>
+            <div class="d-flex flex-column gap-1">
+              <button id="micBtn" class="btn km-mic-btn" onclick="toggleRecording()" title="Voice input">
+                <i class="bi bi-mic-fill"></i>
+              </button>
+              <button class="btn km-send-btn" onclick="sendMessage()" title="Send">
+                <i class="bi bi-send-fill"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ╚════════════════════════════════════════════╝ -->
+
+  </div><!-- /row -->
+
+  <!-- ── Pest Alert Banner ── -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card km-card km-pest-card">
+        <div class="card-header km-card-header">
+          <i class="bi bi-bug-fill me-2 text-danger"></i>
+          Active Pest & Disease Alerts
+          <span class="badge bg-danger ms-2 km-blink">LIVE</span>
+        </div>
+        <div class="card-body">
+          <div class="row g-3" id="pestAlerts">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 7-Day Weather Forecast ── -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card km-card">
+        <div class="card-header km-card-header">
+          <i class="bi bi-calendar3-week me-2 text-info"></i>7-Day Weather Forecast
+        </div>
+        <div class="card-body p-2">
+          <div id="forecastRow" class="d-flex gap-2 overflow-auto km-forecast-row"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<footer class="km-footer text-center py-3 mt-4">
+  <div class="container">
+    <small class="text-muted">
+      🌾 Kisan Mitra · Powered by <strong>IBM Watsonx Granite</strong> · Data: ICAR · Open-Meteo · Agmarknet
+    </small>
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- App JS -->
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

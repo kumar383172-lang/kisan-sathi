@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Diseases & Pests{% endblock %}
+
+{% block content %}
+<div class="container-xxl py-4 px-3">
+
+  <!-- Header -->
+  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-0">🐛 Pest & Disease Encyclopedia</h2>
+      <p class="text-muted small mb-0">12 detailed profiles with symptoms, controls, and prevention</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <input id="diseaseSearch" type="text" class="form-control form-control-sm" placeholder="Search disease or crop…" style="width:200px" oninput="filterDiseases(this.value)">
+      <select id="severityFilter" class="form-select form-select-sm" style="width:130px" onchange="filterBySeverity(this.value)">
+        <option value="">All Severity</option>
+        <option value="High">🔴 High</option>
+        <option value="Medium">🟠 Medium</option>
+        <option value="Low">🟢 Low</option>
+      </select>
+      <select id="cropFilter" class="form-select form-select-sm" style="width:130px" onchange="filterByCrop(this.value)">
+        <option value="">All Crops</option>
+        <option>Maize</option><option>Tomato</option><option>Rice</option>
+        <option>Cotton</option><option>Mustard</option><option>Chickpea</option>
+        <option>Wheat</option><option>Potato</option><option>Groundnut</option>
+        <option>Sugarcane</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini">
+        <div class="km-stat-icon">🦠</div>
+        <div class="km-stat-val text-danger">5</div>
+        <div class="km-stat-name">High Risk</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini">
+        <div class="km-stat-icon">⚠️</div>
+        <div class="km-stat-val text-warning">5</div>
+        <div class="km-stat-name">Medium Risk</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini">
+        <div class="km-stat-icon">🌿</div>
+        <div class="km-stat-val text-success">2</div>
+        <div class="km-stat-name">Low Risk</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="km-stat-mini">
+        <div class="km-stat-icon">🌾</div>
+        <div class="km-stat-val">10</div>
+        <div class="km-stat-name">Crops Covered</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Disease Cards Grid -->
+  <div class="row g-4" id="diseaseGrid">
+    <div class="col-12 text-center py-5">
+      <span class="spinner-border spinner-border-sm me-2"></span>Loading disease database…
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Disease Detail Modal ── -->
+<div class="modal fade" id="diseaseModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content km-modal">
+      <div class="modal-header" id="modalHeader">
+        <h5 class="modal-title" id="modalTitle">Disease Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <a href="/chat" class="btn btn-success btn-sm" id="modalAskBtn">
+          <i class="bi bi-chat-dots-fill me-1"></i>Ask Kisan Mitra about this
+        </a>
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/diseases.js') }}"></script>
+{% endblock %}
